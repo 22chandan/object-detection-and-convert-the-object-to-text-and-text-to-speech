@@ -5,7 +5,6 @@ A high-performance Python application for real-time object detection using YOLOv
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![OpenCV](https://img.shields.io/badge/OpenCV-27338e?style=for-the-badge&logo=OpenCV&logoColor=white)
 ![YOLO](https://img.shields.io/badge/YOLO-00FFFF?style=for-the-badge&logo=YOLO&logoColor=black)
-![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
 
 ## ✨ Features
 
@@ -33,21 +32,22 @@ A high-performance Python application for real-time object detection using YOLOv
 
 ```
 d:\ObjectDetection\
-├── README.md                           # This file
-├── .gitignore                         # Git ignore rules
-├── object_detection.py                # Optimized high-performance version
-├── object_detection_with_voice.py     # Basic version with voice feedback
-├── requirements.txt                   # Python dependencies (to be created)
-├── yolo-coco/                         # YOLO model files (to be downloaded)
-│   ├── yolov3.weights                 # Pre-trained weights (ignored by git)
-│   ├── yolov3.cfg                     # Network configuration
-│   └── coco.names                     # Object class labels
-├── docs/                              # Documentation and examples
-│   ├── images/                        # Sample images for testing
-│   └── screenshots/                   # Application screenshots
-└── utils/                             # Utility scripts (optional)
-    ├── download_yolo.py               # YOLO files download script
-    └── benchmark.py                   # Performance testing
+├── README.md                              # This file
+├── object_detection.py                    # Optimized high-performance version
+├── object_detection_with_voice.py         # Basic version with voice feedback
+├── detection-system/                      # Modular detection system
+│   ├── yolo_detector.py                   # YOLO detection module
+│   └── config.py                          # Configuration settings
+├── App/                                   # Flutter mobile application
+│   └── object_detection/
+│       └── pubspec.yaml                   # Flutter dependencies
+├── yolo-coco/                             # YOLO model files (to be downloaded)
+│   ├── yolov3.weights                     # Pre-trained weights (248MB)
+│   ├── yolov3.cfg                         # Network configuration
+│   └── coco.names                         # Object class labels
+└── docs/                                  # Documentation (optional)
+    ├── images/                            # Sample images for testing
+    └── screenshots/                       # Application screenshots
 ```
 
 ## 🚀 Quick Start
@@ -71,8 +71,8 @@ d:\ObjectDetection\
    ```bash
    pip install opencv-python numpy gtts pygame
    
-   # For optimized version, also install:
-   pip install opencv-contrib-python  # Includes additional optimizations
+   # For optimized performance:
+   pip install opencv-contrib-python
    ```
 
 3. **Download YOLO model files**
@@ -94,15 +94,9 @@ d:\ObjectDetection\
 
 4. **Install system-specific TTS dependencies**
 
-   **Windows:**
-   ```bash
-   # PowerShell TTS is built-in, no additional installation needed
-   ```
+   **Windows:** PowerShell TTS is built-in
    
-   **macOS:**
-   ```bash
-   # 'say' command is built-in, no additional installation needed
-   ```
+   **macOS:** `say` command is built-in
    
    **Linux (Ubuntu/Debian):**
    ```bash
@@ -119,6 +113,12 @@ python object_detection_with_voice.py
 #### Optimized Version (High-performance)
 ```bash
 python object_detection.py
+```
+
+#### Modular Version (Advanced)
+```bash
+cd detection-system
+python -c "from yolo_detector import YOLODetector; from config import Config; detector = YOLODetector(Config()); print('Modular system ready')"
 ```
 
 **Controls:**
@@ -147,26 +147,25 @@ self.nms_threshold = 0.4           # Non-maximum suppression
 self.process_every_n_frames = 3    # Frame processing interval
 ```
 
-### Camera Settings
+#### Modular Version (`detection-system/config.py`)
 ```python
-# Optimize camera parameters
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)   # Width
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)  # Height
-cap.set(cv2.CAP_PROP_FPS, 30)            # Frame rate
-cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)      # Buffer size
+# Edit configuration parameters
+INPUT_SIZE = 320
+CONFIDENCE_THRESHOLD = 0.6
+NMS_THRESHOLD = 0.4
+PROCESS_EVERY_N_FRAMES = 3
 ```
 
 ## 📊 Performance Comparison
 
-| Feature | Basic Version | Optimized Version |
-|---------|---------------|-------------------|
-| **FPS** | 5-10 FPS | 15-25+ FPS |
-| **CPU Usage** | High | Medium |
-| **Memory Usage** | High | Optimized |
-| **GPU Support** | No | Yes (CUDA) |
-| **Audio Threading** | Blocking | Non-blocking |
-| **Frame Processing** | Every frame | Smart skipping |
-| **Stability** | Basic | Enhanced |
+| Feature | Basic Version | Optimized Version | Modular Version |
+|---------|---------------|-------------------|-----------------|
+| **FPS** | 5-10 FPS | 15-25+ FPS | 15-25+ FPS |
+| **CPU Usage** | High | Medium | Medium |
+| **Memory Usage** | High | Optimized | Optimized |
+| **GPU Support** | No | Yes (CUDA) | Yes (CUDA) |
+| **Audio Threading** | Blocking | Non-blocking | Configurable |
+| **Maintainability** | Basic | Medium | High |
 
 ## 🎯 Detected Object Classes
 
@@ -179,7 +178,23 @@ The YOLO model can detect 80 different object classes from the COCO dataset:
 - Cell phone, Book, Clock, Vase, Scissors
 - And 60+ more classes...
 
-[View complete COCO class list](yolo-coco/coco.names)
+## 📱 Flutter Mobile App
+
+The project includes a Flutter mobile application for object detection:
+
+**Location:** `App/object_detection/`
+
+**Features:**
+- Camera integration
+- Google ML Kit object detection
+- Text-to-speech feedback
+- Image picker functionality
+
+**Dependencies:**
+- `camera: ^0.10.5+3`
+- `google_mlkit_object_detection: ^0.14.0`
+- `flutter_tts: ^3.8.5`
+- `image_picker: ^1.0.4`
 
 ## 🔍 Troubleshooting
 
@@ -227,45 +242,7 @@ The YOLO model can detect 80 different object classes from the COCO dataset:
    sudo apt-get install espeak
    ```
 
-### Performance Optimization Tips
-
-1. **Enable GPU acceleration**
-   - Install CUDA toolkit and cuDNN
-   - Use `opencv-contrib-python` with CUDA support
-   - Verify GPU detection: `cv2.cuda.getCudaEnabledDeviceCount()`
-
-2. **Optimize detection parameters**
-   - Lower confidence threshold for more detections
-   - Increase NMS threshold to reduce duplicates
-   - Adjust input size based on accuracy vs. speed needs
-
-3. **System optimization**
-   - Close unnecessary applications
-   - Use SSD storage for faster file access
-   - Ensure adequate cooling for sustained performance
-
 ## 🛠️ Development
-
-### Adding New Features
-
-1. **Custom object classes**
-   - Train custom YOLO model with your dataset
-   - Replace `coco.names` with custom class labels
-   - Update model files accordingly
-
-2. **Additional audio languages**
-   ```python
-   # Modify in speak() or speak_fast() functions
-   tts = gTTS(text=text, lang='es')  # Spanish
-   tts = gTTS(text=text, lang='fr')  # French
-   ```
-
-3. **Image/video file processing**
-   ```python
-   # Replace cv2.VideoCapture(0) with:
-   cap = cv2.VideoCapture('path/to/video.mp4')
-   # or process images in a loop
-   ```
 
 ### Code Structure
 
@@ -291,37 +268,7 @@ The YOLO model can detect 80 different object classes from the COCO dataset:
 7. Repeat with performance monitoring
 ```
 
-## 📈 Benchmarking
-
-### System Requirements Testing
-
-Run performance tests on your system:
-
-```python
-# Create benchmark.py for testing
-import time
-import cv2
-import numpy as np
-
-def benchmark_camera():
-    cap = cv2.VideoCapture(0)
-    frames = 0
-    start_time = time.time()
-    
-    while time.time() - start_time < 10:  # 10 second test
-        ret, frame = cap.read()
-        if ret:
-            frames += 1
-    
-    fps = frames / 10
-    print(f"Camera FPS: {fps:.2f}")
-    cap.release()
-
-if __name__ == "__main__":
-    benchmark_camera()
-```
-
-### Expected Performance
+## 📈 Expected Performance
 
 | Hardware | Basic Version FPS | Optimized Version FPS |
 |----------|------------------|----------------------|
@@ -332,7 +279,7 @@ if __name__ == "__main__":
 
 ## 📝 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source and available under the MIT License.
 
 ## 🤝 Contributing
 
@@ -347,9 +294,8 @@ Contributions are welcome! Please follow these guidelines:
 - Performance optimizations
 - Additional TTS language support
 - GUI interface development
-- Mobile deployment (Android/iOS)
+- Mobile deployment improvements
 - Custom model training utilities
-- Docker containerization
 
 ## 🙏 Acknowledgments
 
@@ -357,12 +303,6 @@ Contributions are welcome! Please follow these guidelines:
 - **OpenCV Community** - Computer vision library
 - **Google** - gTTS (Google Text-to-Speech) API
 - **COCO Dataset** - Object detection dataset and annotations
-
-## 📞 Support & Contact
-
-- **Issues**: Create GitHub issues for bugs and feature requests
-- **Documentation**: Check inline code comments for detailed explanations
-- **Performance**: Review troubleshooting section for optimization tips
 
 ## 🗺️ Roadmap
 
@@ -376,14 +316,10 @@ Contributions are welcome! Please follow these guidelines:
 - [ ] YOLOv4/YOLOv5 model support
 - [ ] Custom model training pipeline
 - [ ] Web-based interface
-- [ ] Mobile app integration
-- [ ] Cloud deployment options
+- [ ] Enhanced mobile app features
 
 ---
 
 **Made with ❤️ using Python, OpenCV, and YOLO**
 
 *For more information about YOLO and object detection, visit the [official YOLO website](https://pjreddie.com/darknet/yolo/).*
-#   o b j e c t - d e t e c t i o n - a n d - c o n v e r t - t h e - o b j e c t - t o - t e x t - a n d - t e x t - t o - s p e e c h  
- #   o b j e c t - d e t e c t i o n - a n d - c o n v e r t - t h e - o b j e c t - t o - t e x t - a n d - t e x t - t o - s p e e c h  
- 
